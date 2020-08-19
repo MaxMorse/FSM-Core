@@ -25,10 +25,10 @@ func _init(Parent):
 	var jumpingChecks =['should_fall']
 	var climbingChecks = ['check_ladder_to_falling']
 	
-	idle = init_state(StateIdle, idleChecks)
-	falling = init_state(StateFalling, fallingChecks)
-	jumping = init_state(StateJumping, jumpingChecks)
-	running = init_state(StateRunning, runningChecks)
+	idle = init_state(StateIdle, idleChecks, "Idle")
+	falling = init_state(StateFalling, fallingChecks, "Falling")
+	jumping = init_state(StateJumping, jumpingChecks, "Jumping")
+	running = init_state(StateRunning, runningChecks, "Running")
 	
 	
 	
@@ -38,9 +38,9 @@ func _init(Parent):
 #And returns an instance of that state
 #Optional string state_name is for testing purposes 
 #And can be displayed if State Label node on parent exists  
-func init_state(state_class, state_checks):
+func init_state(state_class, state_checks, state_name):
 	var s = state_class.new()
-	s._init_state(self, state_checks)
+	s._init_state(self, state_checks, state_name)
 	return s
 
 #Checks if changing active states is necessary

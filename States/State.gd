@@ -9,9 +9,10 @@ func get_checks():
 	return _checks
 
 #Constructor
-func _init_state(machine : StateMachine, checks: Array):
+func _init_state(machine : StateMachine, checks: Array, state_name: String = ""):
 	_machine = machine
 	_checks = checks
+	_state_name = state_name
 
 
 

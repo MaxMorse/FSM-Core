@@ -21,4 +21,4 @@ func _ready():
 func _physics_process(delta):
 	stateMachine._step(delta)
 	motion = move_and_slide(motion, Vector2.UP)
-	stateLabel.text = stateMachine._state_name
+	stateLabel.text = stateMachine._state._state_name
