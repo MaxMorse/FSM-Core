@@ -47,12 +47,7 @@ func init_state(state_class, state_checks, state_name):
 #And calls _change_state in class State Machine if it is 
 func _handle_transitions():
 	var new : State
-	match _state:
-		idle: new = check_for_needed_transition(idle)
-		falling: new = check_for_needed_transition(falling)
-		jumping: new = check_for_needed_transition(jumping)
-		running: new = check_for_needed_transition(running)
-		
+	new = check_for_needed_transition(_state)		
 	if new != null: _change_state(new)
 
 func _step(delta):
