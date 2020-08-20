@@ -1,15 +1,15 @@
 extends StateMachine
 class_name PlayerStateMachine
-
-var states : Array
+var states 
 #state vars
 var idle
 var falling
-var jumping
-var running
+var jumping 
+var running 
 #input vars
-var jump_button_just_pressed
-var jump_button_just_released
+var jump_button_just_pressed 
+var jump_button_just_released 
+
 var x_input
 var up_button_pressed
 var down_button_pressed
@@ -29,10 +29,8 @@ func _init(Parent):
 	falling = init_state(StateFalling, fallingChecks, "Falling")
 	jumping = init_state(StateJumping, jumpingChecks, "Jumping")
 	running = init_state(StateRunning, runningChecks, "Running")
-	
-	
-	
-	_change_state(idle)		
+
+	_change_state(idle)
 
 #Takes the name of a class that inherits from state
 #And returns an instance of that state
@@ -43,18 +41,9 @@ func init_state(state_class, state_checks, state_name):
 	s._init_state(self, state_checks, state_name)
 	return s
 
-#Checks if changing active states is necessary
-#And calls _change_state in class State Machine if it is 
-func _handle_transitions():
-	var new : State
-	new = check_for_needed_transition(_state)		
-	if new != null: _change_state(new)
-
 func _step(delta):
 	get_input()	
-	if _state != null:
-		_state._step(delta)
-	_handle_transitions()
+	._step(delta)
 
 
 #gets relevent player input from Input class
@@ -73,7 +62,7 @@ func get_input():
 
 #Multiplies a number by player's jumpforce and applies 
 #That value to player's vertical motion at start of jump
-func jump(multiplier = 1):
+func jump(multiplier: float = 1):
 	_parent.motion.y = -_parent.jump_force * multiplier
 
 #Slows the player's horizontal movement to a halt smoothly
