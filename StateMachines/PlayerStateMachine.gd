@@ -6,6 +6,7 @@ var idle
 var falling
 var jumping 
 var running 
+var climbing
 #input vars
 var jump_button_just_pressed 
 var jump_button_just_released 
@@ -20,7 +21,7 @@ var y_input
 func _init(Parent):
 	_parent = Parent
 	var runningChecks = ['should_jump','should_fall','should_idle']
-	var idleChecks = ['should_jump','should_run']
+	var idleChecks = ['should_jump','should_run', 'should_climb']
 	var fallingChecks =['should_idle', 'should_run']
 	var jumpingChecks =['should_fall']
 	var climbingChecks = ['check_ladder_to_falling']
@@ -29,6 +30,7 @@ func _init(Parent):
 	falling = init_state(StateFalling, fallingChecks, "Falling")
 	jumping = init_state(StateJumping, jumpingChecks, "Jumping")
 	running = init_state(StateRunning, runningChecks, "Running")
+	climbing = init_state(StateClimbing, climbingChecks, "Climbing")
 
 	_change_state(idle)
 
@@ -108,6 +110,13 @@ func should_fall() -> State:
 	else:
 		return null
 
+func should_climb() -> State:
+	if up_button_pressed && _parent.touchingLadder:
+		return climbing
+	else:
+		 return null
+
+
 func should_jump() -> State:
 	if jump_button_just_pressed:
 		return jumping
@@ -124,7 +133,13 @@ func should_run() -> State:
 		return running
 	else:
 		return null 
-		
+	
+func check_ladder_to_falling() -> State:
+	if jump_button_just_pressed: 
+		return falling
+	else:
+		 return null 
+
 func check_for_needed_transition(state: State) -> State:
 	var s : State
 	for n in range(state.get_checks().size()):
