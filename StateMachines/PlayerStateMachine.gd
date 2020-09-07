@@ -7,6 +7,7 @@ var falling
 var jumping 
 var running 
 var climbing
+var climbing_up
 #input vars
 var jump_button_just_pressed 
 var jump_button_just_released 
@@ -24,14 +25,14 @@ func _init(Parent):
 	var idleChecks = ['should_jump','should_run', 'should_climb']
 	var fallingChecks =['should_idle', 'should_run']
 	var jumpingChecks =['should_fall']
-	var climbingChecks = ['check_ladder_to_falling']
-	
+	var climbingChecks = ['check_ladder_to_falling', 'should_step_down_off_ladder', 'should_step_up_off_ladder']
+	var climbing_upChecks = ['check_done_climbing_up']
 	idle = init_state(StateIdle, idleChecks, "Idle")
 	falling = init_state(StateFalling, fallingChecks, "Falling")
 	jumping = init_state(StateJumping, jumpingChecks, "Jumping")
 	running = init_state(StateRunning, runningChecks, "Running")
 	climbing = init_state(StateClimbing, climbingChecks, "Climbing")
-
+	climbing_up = init_state(StateClimbingUp, climbing_upChecks, "Climbing Up")
 	_change_state(idle)
 
 #Takes the name of a class that inherits from state
@@ -61,6 +62,15 @@ func get_input():
 ###
 ## Player Movement 
 ###
+func set_one_way_collisions(active: bool):
+	_parent.set_collision_mask_bit(2, active)
+
+func set_parent_current_ladder():
+	if y_input < 0:
+		_parent.set_current_ladder(_parent.ladder_above)
+	else:
+		_parent.set_current_ladder(_parent.ladder_below)
+
 
 #Multiplies a number by player's jumpforce and applies 
 #That value to player's vertical motion at start of jump
@@ -95,12 +105,17 @@ func change_animation(animation: String):
 #And applies it to player's vertical motion
 #Used for climbing ladders 
 func climb(delta):
-	_parent.motion.y =y_input * _parent.climb_speed * delta * _parent.TARGET_FPS
-	#_parent.motion.y = clamp(_parent.motion.y, -_parent.max_speed, _parent.max_speed)
+	if( y_input > 0 && _parent.ladder_below):
+		_parent.set_collision_mask_bit(2, false) 
+	if (y_input < 0 && _parent.position.y <= _parent.current_ladder.top_y):
+		_parent.motion.y = 0
+	else:
+		_parent.motion.y =y_input * _parent.climb_speed * delta * _parent.TARGET_FPS
 
-#halts player's horizontal motion immediately
-#Called at the start of climb state to ensure 
-#Player doesn't drift horizonally away from ladder	
+func climb_up_off(delta):
+	_parent.motion.y = -1 * _parent.climb_speed * delta * _parent.TARGET_FPS
+
+	
 func halt_x_movement():
 	_parent.motion.x = 0
 
@@ -111,7 +126,9 @@ func should_fall() -> State:
 		return null
 
 func should_climb() -> State:
-	if up_button_pressed && _parent.touchingLadder:
+	if up_button_pressed && _parent.ladder_above:
+		return climbing
+	elif down_button_pressed && _parent.ladder_below:
 		return climbing
 	else:
 		 return null
@@ -147,4 +164,27 @@ func check_for_needed_transition(state: State) -> State:
 		if s != null:
 			return s
 		
+	return null
+
+func should_step_up_off_ladder() -> State:
+	var c_ladder = _parent.current_ladder
+	if y_input < 0 && _parent.position.y < c_ladder.top_y && c_ladder.has_top_exit :
+		return climbing_up 
+	return null
+
+
+
+func should_step_down_off_ladder() -> State:
+	#print("in should step down off ladder")
+	if y_input > 0:
+		
+		if _parent.current_ladder != null:
+			var dif = _parent.current_ladder.base_y - _parent.position.y
+			if dif < 33: return idle 
+	return null
+
+func check_done_climbing_up() -> State:
+	var c_ladder = _parent.current_ladder
+	if _parent.position.y < (c_ladder.top_y - 22):
+		return idle
 	return null
