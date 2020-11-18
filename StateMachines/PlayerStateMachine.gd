@@ -180,11 +180,11 @@ func should_step_down_off_ladder() -> State:
 		
 		if _parent.current_ladder != null:
 			var dif = _parent.current_ladder.base_y - _parent.position.y
-			if dif < 33: return idle 
+			if dif < _parent.height * 0.5 + 1: return idle 
 	return null
 
 func check_done_climbing_up() -> State:
 	var c_ladder = _parent.current_ladder
-	if _parent.position.y < (c_ladder.top_y - 22):
+	if _parent.position.y < (c_ladder.top_y - _parent.height * 0.5):
 		return idle
 	return null
