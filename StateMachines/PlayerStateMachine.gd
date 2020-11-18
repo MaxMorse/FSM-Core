@@ -34,7 +34,7 @@ func _init(Parent):
 	climbing = init_state(StateClimbing, climbingChecks, "Climbing")
 	climbing_up = init_state(StateClimbingUp, climbing_upChecks, "Climbing Up")
 	_change_state(idle)
-
+#This is a test
 #Takes the name of a class that inherits from state
 #And returns an instance of that state
 #Optional string state_name is for testing purposes 
